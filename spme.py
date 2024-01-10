@@ -6,6 +6,7 @@ def split_file(file_path, num_splits):
     
     # 计算每个拆分文件的大小
     split_size = file_size // num_splits
+    extra = file_size % num_splits
     
     # 打开原始文件
     with open(file_path, 'rb') as f:
@@ -17,11 +18,11 @@ def split_file(file_path, num_splits):
             # 打开拆分文件
             with open(split_file_name, 'wb') as split_file:
                 # 读取拆分文件大小的数据
-                data = f.read(split_size)
+                data = f.read(split_size if i < num_splits - 1 else split_size + extra)
                 
                 # 写入拆分文件
                 split_file.write(data)
-    
+        
     print(f'文件拆分完成！共拆分为 {num_splits} 个文件。')
 
 def merge_files(file_path):
@@ -30,13 +31,14 @@ def merge_files(file_path):
     file_name = os.path.basename(file_path)
     
     # 获取拆分文件列表
-    split_files = [f for f in os.listdir(file_dir) if f.startswith(file_name) and f != file_name]
-    
+    # split_files = [f for f in os.listdir(file_dir) if f.startswith(file_name) and f != file_name]
+    split_files = [file_name + '.split' + str(i) for i in range(20)]
     # 按文件名排序
-    split_files.sort()
+    # split_files.sort()
+    print(split_files)
     
     # 打开合并后的文件
-    with open(file_path, 'wb') as merged_file:
+    with open(file_path + ".merged", 'wb') as merged_file:
         # 逐个合并文件
         for split_file in split_files:
             # 打开拆分文件
@@ -53,5 +55,5 @@ def merge_files(file_path):
 file_path = './epoch100_model.pth'
 num_splits = 20
 
-split_file(file_path, num_splits)
-# merge_files(file_path)
+# split_file(file_path, num_splits)
+merge_files(file_path)
